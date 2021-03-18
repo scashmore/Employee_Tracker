@@ -1,17 +1,16 @@
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const { resolve } = require("node:path");
-require(console.table);
+require("console.table");
 
 const connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
     user: 'root',
     password: '',
-    database: 'employe_trackerDB',
+    database: 'employee_trackerDB',
 });
-const init = () => {
-    connection.connect();
+
+function init() {
     inquirer
         .prompt({
             name: 'add',
@@ -20,7 +19,7 @@ const init = () => {
             choices: ['department', 'role', 'employee', 'EXIT'],
         })
         .then((responce) => {
-            switch (responce) {
+            switch (responce.add) {
                 case 'department':
                     dep()
                     break;
@@ -30,8 +29,9 @@ const init = () => {
                 case 'employee':
                     empl()
                     break;
-                default:
-                    connection.end();
+                case 'EXIT':
+                    connection.end()
+                    break;
             }
         }
         );
@@ -51,6 +51,7 @@ function dep() {
                 (error) => {
                 if (error) throw error;
                 console.log('department sucessfully created!');
+                connection.end();
                 init();
                 }
             )
@@ -90,3 +91,4 @@ function empl() {
         },
     ])
 }
+init();
