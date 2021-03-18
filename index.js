@@ -47,12 +47,12 @@ function dep() {
         .then(responce => {
             connection.query(
                 `INSERT INTO department SET ?`,
-                {name: responce.name},
+                { name: responce.name },
                 (error) => {
-                if (error) throw error;
-                console.log('department sucessfully created!');
-                connection.end();
-                init();
+                    if (error) throw error;
+                    console.log('department sucessfully created!');
+                    connection.end();
+                    init();
                 }
             )
         })
@@ -69,7 +69,29 @@ function role() {
             name: 'name',
             type: 'input',
             message: 'What role would you like to add?'
+        },
+        {
+            name: 'salary',
+            type: 'input',
+            message: 'what is the salary of this role?'
         }])
+        .then(responce => {
+            const depart = responce.department;
+            connection.query(
+                `INSERT INTO role SET ?`,
+                {
+                    title: responce.name,
+                    salary: responce.salary,
+                    department_id: `SELECT id FROM department WHERE name = ${depart}`
+                },
+                (error) => {
+                    if (error) throw error;
+                    console.log('Role sucessfully created!');
+                    connection.end();
+                    init();
+                }
+            )
+        })
 }
 
 function empl() {
@@ -89,6 +111,23 @@ function empl() {
             type: 'input',
             message: "What is this employee's last name?"
         },
-    ])
+        ])
+        .then(responce => {
+            const resRole = responce.role;
+            connection.query(
+                `INSERT INTO employee SET ?`,
+                {
+                    first_name: responce.first,
+                    last_name: responce.last,
+                    role_id: `SELECT id FROM role WHERE title = ${resRole}`
+                },
+                (error) => {
+                    if (error) throw error;
+                    console.log('Employee sucessfully created!');
+                    connection.end();
+                    init();
+                }
+            )
+        })
 }
 init();
