@@ -44,6 +44,17 @@ function dep() {
             type: 'input',
             message: 'What department would you like to add?'
         })
+        .then(responce => {
+            connection.query(
+                `INSERT INTO department SET ?`,
+                {name: responce.name},
+                (error) => {
+                if (error) throw error;
+                console.log('department sucessfully created!');
+                init();
+                }
+            )
+        })
 }
 
 function role() {
