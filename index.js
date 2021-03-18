@@ -26,7 +26,7 @@ function init() {
                 case 'add role':
                     role()
                     break;
-                case 'add employees':
+                case 'add employee':
                     empl()
                     break;
                 case 'view departments':
