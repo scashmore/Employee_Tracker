@@ -15,7 +15,7 @@ CREATE Table role(
   salary DECIMAL NOT NULL,
   department_id INT NOT NULL,
   PRIMARY KEY (id),
-  FOREIGN KEY (department_id) REFERENCES department(id)
+  FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE CASCADE
 );
 
 CREATE Table employee(
@@ -25,20 +25,6 @@ CREATE Table employee(
   role_id INT NOT NULL,
   manager_id INT,
   PRIMARY KEY (id),
-  FOREIGN KEY (role_id) REFERENCES role(id)
+  FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE CASCADE,
+  FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE CASCADE
 );
-
-INSERT INTO department(name)
-VALUES ('Human Resources');
-INSERT INTO department(name)
-VALUES ('Production');
-INSERT INTO department(name)
-VALUES ('Finance');
-
-INSERT INTO role(title, salary, department_id)
-VALUES ('Manager', 70000, 2);
-INSERT INTO role(title, salary, department_id)
-VALUES ('Accountant', 40000, 3);
-
-INSERT INTO employee(first_name, last_name, role_id, manager_id)
-VALUES ('Susan', 'Ashmore', 1, null);
