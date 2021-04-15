@@ -15,8 +15,9 @@ function init() {
         .prompt({
             name: 'add',
             type: 'list',
-            message: 'Add or view?',
-            choices: ['add department', 'add role', 'add employee', 'view departments', 'view roles', 'view employees', 'EXIT'],
+            message: 'Menu',
+            choices: ['add department', 'add role', 'add employee', 'update employee role', 
+                      'view departments', 'view roles', 'view employees', 'EXIT'],
         })
         .then((responce) => {
             switch (responce.add) {
@@ -46,6 +47,9 @@ function init() {
                         if (error) throw error;
                     console.log(row)});
                     init()
+                    break;
+                case 'update employee role':
+                    update()
                     break;
                 case 'EXIT':
                     connection.end()
@@ -182,4 +186,24 @@ function empl() {
             })
     })
 }
+
+function update() {
+    inquirer.prompt([
+        {
+            message: "which employee would you like to update? (Search by first name)",
+            type: "input",
+            name: "name"
+        }, {
+            message: "enter the new role ID:",
+            type: "number",
+            name: "role_id"
+        }
+    ]).then(function (response) {
+        connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [response.role_id, response.name], function (err, data) {
+            console.table(data);
+        })
+    init();
+})
+}
+
 init();
