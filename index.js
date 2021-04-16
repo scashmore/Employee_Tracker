@@ -16,8 +16,8 @@ function init() {
             name: 'add',
             type: 'list',
             message: 'Menu',
-            choices: ['add department', 'add role', 'add employee', 'update employee role', 
-                      'view departments', 'view roles', 'view employees', 'EXIT'],
+            choices: ['add department', 'add role', 'add employee', 'update employee role',
+                'view departments', 'view roles', 'view employees', 'EXIT'],
         })
         .then((responce) => {
             switch (responce.add) {
@@ -33,19 +33,22 @@ function init() {
                 case 'view departments':
                     connection.query(`SELECT * FROM department`, (error, row) => {
                         if (error) throw error;
-                    console.log(row)});
+                        console.log(row)
+                    });
                     init()
                     break;
                 case 'view roles':
                     connection.query(`SELECT * FROM role`, (error, row) => {
                         if (error) throw error;
-                    console.log(row)});
+                        console.log(row)
+                    });
                     init()
                     break;
-                case 'view employee':
-                    connection.query(`SELECT * FROM employee`,(error, row) => {
+                case 'view employees':
+                    connection.query(`SELECT * FROM employee_trackerdb.employee`, (error, row) => {
                         if (error) throw error;
-                    console.log(row)});
+                        console.log(row)
+                    });
                     init()
                     break;
                 case 'update employee role':
@@ -81,129 +84,75 @@ function dep() {
 }
 
 function role() {
-    connection.query(`SELECT * FROM department`, (res, error) => {
-        if (error) throw error;
-        inquirer
-            .prompt([{
-                name: 'department',
-                type: 'rawlist',
-                message: 'In which department are you adding a role?',
-                choices() {
-                    const arr = [];
-                    res.forEach(({ name }) => {
-                        arr.push(name);
-                    })
-                    return arr;
-                }
-            },
-            {
-                name: 'name',
-                type: 'input',
-                message: 'What role would you like to add?'
-            },
-            {
-                name: 'salary',
-                type: 'input',
-                message: 'what is the salary of this role?'
-            }])
-            .then(responce => {
-                const department = responce.department;
-                connection.query('SELECT * FROM department', (pull, error) => {
-                    if (error) throw error;
-                    let filtered = pull.filter((pull) => {
-                        return pull.name == department;
-                    })
-                    let id = filtered[0].id;
-                    connection.query(
-                        `INSERT INTO role SET ?`,
-                        {
-                            title: responce.name,
-                            salary: responce.salary,
-                            department_id: id
-                        },
-                        (error) => {
-                            if (error) throw error;
-                            console.log('Role sucessfully created!');
-                            connection.end();
-                            init();
-                        }
-                    )
-                })
-            })
+    inquirer
+    .prompt([
+        {
+            message: "enter title:",
+            type: "input",
+            name: "title"
+        }, {
+            message: "enter salary:",
+            type: "number",
+            name: "salary"
+        }, {
+            message: "enter department in which you'd like to add role by id:",
+            type: "number",
+            name: "department_id"
+        }
+    ]).then(function (response) {
+        connection.query("INSERT INTO role (title, salary, department_id) values (?, ?, ?)", 
+        [response.title, response.salary, response.department_id], function (err) {
+            if (err) throw err
+        })
+        init();
     })
 }
 
 function empl() {
-    connection.query(`SELECT * FROM role`, (res, error) => {
-        if (error) throw error;
-        inquirer
-            .prompt([{
-                name: 'role',
-                type: 'rawlist',
-                message: "What is this employee's role?",
-                choices() {
-                    const arr = [];
-                    res.forEach(({ title }) => {
-                        arr.push(title);
-                    })
-                    return arr;
-                }
-            },
-            {
-                name: 'first',
-                type: 'input',
-                message: "What is this employee's first name?"
-            },
-            {
-                name: 'last',
-                type: 'input',
-                message: "What is this employee's last name?"
-            },
-            ])
-            .then(responce => {
-                const role = responce.role;
-                connection.query('SELECT * FROM role', (pull, error) => {
-                    if (error) throw error;
-                    let filtered = pull.filter((pull) => {
-                        return pull.title == role;
-                    })
-                    let id = filtered[0].id;
-                    connection.query(
-                        `INSERT INTO employee SET ?`,
-                        {
-                            first_name: responce.first,
-                            last_name: responce.last,
-                            role_id: id
-                        },
-                        (error) => {
-                            if (error) throw error;
-                            console.log('Employee sucessfully created!');
-                            connection.end();
-                            init();
-                        }
-                    )
-                })
+    inquirer
+        .prompt([
+        {
+            name: 'first',
+            type: 'input',
+            message: "What is this employee's first name?"
+        },
+        {
+            name: 'last',
+            type: 'input',
+            message: "What is this employee's last name?"
+        },
+        {
+            type: "number",
+            name: "role_id",
+            message: "What is the employees role id?"
+        },
+        ])
+        .then(function (response) {
+            connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) values (?, ?, ?, ?)", 
+            [response.first, response.last, response.role_id, response.manager_id], function (err) {
+                if (err) throw err
             })
-    })
+            init();
+        })
 }
 
 function update() {
-    inquirer.prompt([
-        {
-            message: "which employee would you like to update? (Search by first name)",
-            type: "input",
-            name: "name"
-        }, {
-            message: "enter the new role ID:",
-            type: "number",
-            name: "role_id"
-        }
-    ]).then(function (response) {
-        connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [response.role_id, response.name], function (err, data) {
-            console.table(data);
+    inquirer
+        .prompt([
+            {
+                message: "which employee would you like to update? (Search by first name)",
+                type: "input",
+                name: "name"
+            }, {
+                message: "enter the new role ID:",
+                type: "number",
+                name: "role_id"
+            }
+        ]).then(function (response) {
+            connection.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [response.role_id, response.name], function (err, data) {
+            })
+            init();
         })
-    init();
-})
 }
 
 init();
