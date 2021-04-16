@@ -45,7 +45,7 @@ function init() {
                     init()
                     break;
                 case 'view employees':
-                    connection.query(`SELECT * FROM employee_trackerdb.employee`, (error, row) => {
+                    connection.query(`SELECT * FROM employee_trackerDB.employee`, (error, row) => {
                         if (error) throw error;
                         console.log(row)
                     });
@@ -112,12 +112,12 @@ function empl() {
     inquirer
         .prompt([
         {
-            name: 'first',
+            name: 'first_name',
             type: 'input',
             message: "What is this employee's first name?"
         },
         {
-            name: 'last',
+            name: 'last_name',
             type: 'input',
             message: "What is this employee's last name?"
         },
@@ -128,11 +128,13 @@ function empl() {
         },
         ])
         .then(function (response) {
-            connection.query("INSERT INTO employee (first_name, last_name, role_id, manager_id) values (?, ?, ?, ?)", 
-            [response.first, response.last, response.role_id, response.manager_id], function (err) {
-                if (err) throw err
+            connection.query("INSERT INTO employee SET ?", 
+            response,
+             function(err, response) {
+               if (err) throw err;
+       
+               init (); 
             })
-            init();
         })
 }
 

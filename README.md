@@ -2,9 +2,9 @@
 
 ## About
 
-This application is designed to add employees, roles, and departments into a databaes. 
+This application is designed to add employees, roles, and departments into a databaes. A user can also view all roles, employees, and departments, and update employees.
 
-![image](/image.png)
+![image](/readme.gif)
 
 ## Install
 
